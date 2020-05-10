@@ -1,0 +1,7 @@
+{
+  "dependencies": {
+    "@google-cloud/storage": "^4.7.0",
+    "chrome-aws-lambda": "^3.0.4",
+    "puppeteer": "^2.1.1"
+  }
+}

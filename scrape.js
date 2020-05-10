@@ -1,5 +1,4 @@
 const puppeteer = require('puppeteer');
-const chromium = require('chrome-aws-lambda');
 const { Storage } = require('@google-cloud/storage');
 
 
@@ -10,16 +9,14 @@ function delay(time) {
  }
 
 const getHighlights = async ()=>{
-  const browser = await chromium.puppeteer.launch({
-    args: chromium.args,
-    defaultViewport: chromium.defaultViewport,
-    executablePath: await chromium.executablePath,
-    headless: chromium.headless,
-    ignoreHTTPSErrors: true,
-  });
+  const browser = await puppeteer.launch({
+    ignoreDefaultArgs: ['--disable-extensions'],
+    headless:true,
+    args: ["--no-sandbox"]
+});
   const page = await browser.newPage();
   await page.goto('https://www.goodreads.com/notes/114893734-maitham-deeb?ref=rnlp');
-  await delay(5000)
+  await delay(2000)
 
   const books = await page.evaluate(async () => {
     let elements = document.getElementsByClassName('annotatedBookItem');
@@ -52,11 +49,9 @@ const getHighlights = async ()=>{
  }
 
 
-module.exports = async (req, res) => {
-  
-  const storage = new Storage(process.env.GCLOUD_CREDENTIALS);
+exports.scrapeKindle = async (req, res) => {
+  const storage = new Storage();
   const highlights = await getHighlights()
-  console.log(highlights)
   const bucket =  storage.bucket("maitham_io")
   var file = bucket.file('highlights.json');
   var buf = Buffer.from(JSON.stringify(highlights));

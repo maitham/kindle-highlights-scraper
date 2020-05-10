@@ -56,5 +56,6 @@ exports.scrapeKindle = async (req, res) => {
   var file = bucket.file('highlights.json');
   var buf = Buffer.from(JSON.stringify(highlights));
   await file.save(buf,{ metadata: { contentType: "application/json" }})
+  file.makePublic()
   res.status(200).send(JSON.stringify(highlights))
 }
